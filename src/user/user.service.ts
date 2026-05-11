@@ -21,7 +21,7 @@ export class UserService {
     const createdUser = await this.prisma.user.create({ data });
 
     return {
-      ...createUser,
+      ...createdUser,
       senha_hash: undefined,
     };
   }
