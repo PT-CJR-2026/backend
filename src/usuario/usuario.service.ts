@@ -26,8 +26,16 @@ export class UsuarioService {
     return `This action returns all usuario`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usuario`;
+  findByEmail(email: string) {
+    return this.prisma.usuario.findUnique({
+      where: {  email  },
+    });
+  }
+
+  findByUsername(username: string) {
+    return this.prisma.usuario.findUnique({
+      where: {  username  },
+    });
   }
 
   update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
