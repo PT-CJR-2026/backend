@@ -8,7 +8,7 @@ import { IsPublic } from '../auth/decorators/is-public.decorator';
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
-  @IsPublic()
+  @IsPublic() //deixa a criação de novos usuarios publica
   @Post()
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
