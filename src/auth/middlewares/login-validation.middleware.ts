@@ -4,8 +4,9 @@ import {
   NestMiddleware,
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { LoginRequestBody } from '../models/LoginRequestBody';
 import { validate } from 'class-validator';
+
+import { LoginRequestBody } from '../models/LoginRequestBody';
 
 @Injectable()
 export class LoginValidationMiddleware implements NestMiddleware {
@@ -26,7 +27,7 @@ export class LoginValidationMiddleware implements NestMiddleware {
             ...acc,
             ...Object.values(curr.constraints || {}),
           ];
-        }, []),
+        }, [] as string[]),
       );
     }
 
