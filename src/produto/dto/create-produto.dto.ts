@@ -6,7 +6,7 @@ export class CreateProdutoDto extends Produto{
     declare loja_id: number;
     
     @IsInt()
-    declare ategorias_id: number;
+    declare categoria_id: number;
 
     @IsString()
     declare nome: string;
