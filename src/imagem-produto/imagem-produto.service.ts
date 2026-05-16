@@ -2,10 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateImagemProdutoDto } from './dto/create-imagem-produto.dto';
 import { UpdateImagemProdutoDto } from './dto/update-imagem-produto.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateImagemProdutoDto } from './dto/create-imagem-produto.dto';
-import { UpdateImagemProdutoDto } from './dto/update-imagem-produto.dto';
 
 @Injectable()
 export class ImagemProdutoService {
