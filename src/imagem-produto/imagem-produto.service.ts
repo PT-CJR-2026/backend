@@ -8,55 +8,55 @@ export class ImagemProdutoService {
     constructor(private readonly prisma: PrismaService) {}
 
     // Poder ser uma entidade fraca ela precisa do pai, isso aqui confere se ela tem pai
-    private async verificarProduto(produtoId: number) {
+    private async verificarProduto(imagem_id: number) {
         const produto = await this.prisma.produto.findUnique({
-            where: { id: produtoId },
+            where: { id: imagem_id },
         });
     if (!produto) {
-        throw new NotFoundException(`Produto ${produtoId} não encontrado`);
+        throw new NotFoundException(`Produto ${imagem_id} não encontrado`);
         }
     }
 
     // Busca a imagem de acordo com o produto
-    private async buscarImagem(produtoId: number, id: number) {
+    private async buscarImagem(produto_id: number, id: number) {
         const imagem = await this.prisma.imagem_Produto.findFirst({
-            where: { id, produto_id: produtoId },
+            where: { id, produto_id },
         });
         if (!imagem) {
             throw new NotFoundException(
-            `Imagem ${id} não encontrada para o produto ${produtoId}`,
+            `Imagem ${id} não encontrada para o produto ${produto_id}`,
             );
         }
         return imagem;
     }
 
-    async create(produtoId: number, dto: CreateImagemProdutoDto) {
-        await this.verificarProduto(produtoId);
+    async create(produto_id: number, dto: CreateImagemProdutoDto) {
+        await this.verificarProduto(produto_id);
 
         return this.prisma.imagem_Produto.create({
             data: {
                 ...dto,
-                produto_id: produtoId,
+                produto_id,
             },
         });
     }
 
-    async findAll(produtoId: number) {
-        await this.verificarProduto(produtoId);
+    async findAll(produto_id: number) {
+        await this.verificarProduto(produto_id);
 
         return this.prisma.imagem_Produto.findMany({
-            where: { produto_id: produtoId },
+            where: { produto_id },
             orderBy: { ordem: 'asc' },
         });
     }
 
-    async findOne(produtoId: number, id: number) {
-        await this.verificarProduto(produtoId);
-        return this.buscarImagem(produtoId, id);
+    async findOne(produto_id: number, id: number) {
+        await this.verificarProduto(produto_id);
+        return this.buscarImagem(produto_id, id);
         }
 
-        async update(produtoId: number, id: number, dto: UpdateImagemProdutoDto) {
-        await this.buscarImagem(produtoId, id);
+        async update(produto_id: number, id: number, dto: UpdateImagemProdutoDto) {
+        await this.buscarImagem(produto_id, id);
 
         return this.prisma.imagem_Produto.update({
             where: { id },
@@ -64,8 +64,8 @@ export class ImagemProdutoService {
         });
     }
 
-    async remove(produtoId: number, id: number) {
-        await this.buscarImagem(produtoId, id);
+    async remove(produto_id: number, id: number) {
+        await this.buscarImagem(produto_id, id);
 
         return this.prisma.imagem_Produto.delete({
             where: { id },
