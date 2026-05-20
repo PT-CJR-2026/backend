@@ -15,14 +15,17 @@ export class ProdutoService {
   }
 
   findAll() {
-    return this.prisma.produto.findMany();
-  }
+  return this.prisma.produto.findMany({
+    include: { categoria: true },
+  });
+}
 
   findOne(id: number) {
-    return this.prisma.produto.findUnique({
-      where: { id },
-    });
-  }
+  return this.prisma.produto.findUnique({
+    where: { id },
+    include: { categoria: true },
+  });
+}
 
   update(id: number, updateProdutoDto: UpdateProdutoDto) {
     return this.prisma.produto.update({

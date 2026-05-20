@@ -8,22 +8,31 @@ export class AvaliacaoProdutoService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createAvaliacaoProdutoDto: CreateAvaliacaoProdutoDto) {
-    return 'This action adds a new avaliacaoProduto';
+    return this.prisma.avaliacao_Produto.create({
+      data: createAvaliacaoProdutoDto,
+    });
   }
 
   findAll() {
-    return `This action returns all avaliacaoProduto`;
+    return this.prisma.avaliacao_Produto.findMany();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} avaliacaoProduto`;
+    return this.prisma.avaliacao_Produto.findUnique({
+      where: { id },
+    });
   }
 
   update(id: number, updateAvaliacaoProdutoDto: UpdateAvaliacaoProdutoDto) {
-    return `This action updates a #${id} avaliacaoProduto`;
+    return this.prisma.avaliacao_Produto.update({
+      where: { id },
+      data: updateAvaliacaoProdutoDto,
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} avaliacaoProduto`;
+    return this.prisma.avaliacao_Produto.delete({
+      where: { id },
+    });
   }
 }
