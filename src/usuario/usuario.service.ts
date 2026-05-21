@@ -22,9 +22,9 @@ export class UsuarioService {
     };
   }
 
-  findAll() {
-    return `This action returns all usuario`;
-  }
+  // findAll() {
+  //   return `This action returns all usuario`;
+  // }
 
   findByEmail(email: string) {
     return this.prisma.usuario.findUnique({
@@ -38,11 +38,32 @@ export class UsuarioService {
     });
   }
 
-  update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
+  async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
+  const { senha_hash, ...rest } = updateUsuarioDto;
+
+  const data: Record<string, any> = { ...rest };
+
+  if (senha_hash) {
+    data.senha_hash = await bcrypt.hash(senha_hash, 10);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usuario`;
-  }
+  const updatedUsuario = await this.prisma.usuario.update({
+    where: { id },
+    data,
+  });
+
+  return {
+    ...updatedUsuario,
+    senha_hash: undefined,
+  };
+}
+
+async remove(id: number) {
+  await this.prisma.usuario.delete({
+    where: { id },
+  });
+
+  return { message: `Usuário #${id} removido com sucesso` };
+}
+
 }
