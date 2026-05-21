@@ -22,9 +22,18 @@ export class UsuarioService {
     };
   }
 
-  // findAll() {
-  //   return `This action returns all usuario`;
-  // }
+  async findAll() {
+  const usuarios = await this.prisma.usuario.findMany({
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      username: true,
+      // senha_hash não incluso
+    },
+  });
+  return usuarios;
+}
 
   findByEmail(email: string) {
     return this.prisma.usuario.findUnique({
