@@ -34,7 +34,7 @@ export class LojaService {
         _count: {
           select: {
             produtos: true,
-            avaliacao_loja: true,
+            avaliacoes: true, // ✅ corrigido
           },
         },
       },
@@ -52,14 +52,14 @@ export class LojaService {
         },
 
         produtos: {
-        where: { estoque: { gt: 0 } },
+          where: { estoque: { gt: 0 } },
           orderBy: { created_at: 'desc' },
           include: {
             imagem_produto: { orderBy: { ordem: 'asc' }, take: 1 },
           },
         },
 
-        avaliacao_loja: {
+        avaliacoes: { // ✅ corrigido
           orderBy: { created_at: 'desc' },
           include: {
             usuario: {
@@ -70,7 +70,7 @@ export class LojaService {
         _count: {
           select: {
             produtos: true,
-            avaliacao_loja: true,
+            avaliacoes: true, // ✅ corrigido
           },
         },
       },
@@ -114,7 +114,7 @@ export class LojaService {
         _count: {
           select: {
             produtos: true,
-            avaliacao_loja: true,
+            avaliacoes: true, // ✅ corrigido
           },
         },
       },
