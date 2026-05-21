@@ -19,7 +19,7 @@ export class LojaController {
   constructor(private readonly lojaService: LojaService) {}
 
   // POST /lojas
-  @Post()
+  @Post('criarloja')
   create(@Body() createLojaDto: CreateLojaDto, @Request() req) {
     return this.lojaService.create(createLojaDto, req.user.id);
   }
