@@ -10,10 +10,11 @@ import { ProdutoModule } from './produto/produto.module';
 import { CategoriaModule } from './categoria/categoria.module';
 import { AvaliacaoLojaModule } from './avaliacao-loja/avaliacao-loja.module';
 import { AvaliacaoProdutoModule } from './avaliacao-produto/avaliacao-produto.module';
+import { LojaModule } from './loja/loja.module';
 
 
 @Module({
-  imports: [PrismaModule, UsuarioModule, AuthModule, ProdutoModule, CategoriaModule, AvaliacaoLojaModule, AvaliacaoProdutoModule],
+  imports: [PrismaModule, UsuarioModule, AuthModule, ProdutoModule, CategoriaModule, AvaliacaoLojaModule, AvaliacaoProdutoModule, LojaModule],
   controllers: [AppController],
   providers: [
     AppService,

@@ -1,14 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { UpdateSenhaDto, UpdateEmailDto, UpdateUsernameDto, UpdateNomeDto } from './dto/update-usuario.dto';
 import { IsPublic } from '../auth/decorators/is-public.decorator';
 
 @Controller('usuario')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
-  @IsPublic() //deixa a criação de novos usuarios publica
+  @IsPublic()
   @Post()
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
@@ -19,14 +19,25 @@ export class UsuarioController {
     return this.usuarioService.findAll();
   }
 
-  /*@Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuarioService.findOne(+id);
-  }*/
+  // Pega o id do token JWT — mais seguro que pegar da URL
+  @Patch('atualizar-senha')
+  updateSenha(@Request() req, @Body() dto: UpdateSenhaDto) {
+    return this.usuarioService.updateSenha(req.user.id, dto);
+  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
+  @Patch('atualizar-username')
+  updateUsername(@Request() req, @Body() dto: UpdateUsernameDto) {
+    return this.usuarioService.updateUsername(req.user.id, dto);
+  }
+
+  @Patch('atualizar-email')
+  updateEmail(@Request() req, @Body() dto: UpdateEmailDto) {
+    return this.usuarioService.updateEmail(req.user.id, dto);
+  }
+
+  @Patch('atualizar-nome')
+  updateNome(@Request() req, @Body() dto: UpdateNomeDto) {
+    return this.usuarioService.updateNome(req.user.id, dto);
   }
 
   @Delete(':id')
