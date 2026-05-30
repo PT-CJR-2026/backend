@@ -131,7 +131,54 @@ export class UsuarioService {
     const senhaCorreta = await bcrypt.compare(senha_hash, usuario.senha_hash);
     if (!senhaCorreta) throw new BadRequestException('Senha incorreta');
 
+    // o Conjunto abaixo deleta o usuário e todas as suas dependências, seguindo a ordem correta para evitar erros de integridade referencial.
+    // 1. Comentários
+    await this.prisma.comentario_Avaliacao.deleteMany({
+      where: { usuario_id: id },
+    });
+
+    // 2. Avaliacoes do usuario
+    await this.prisma.avaliacao_Loja.deleteMany({ where: { usuario_id: id } });
+    await this.prisma.avaliacao_Produto.deleteMany({
+      where: { usuario_id: id },
+    });
+
+    // 3. Comentarios nas avaliacoes das lojas do usuario
+    await this.prisma.comentario_Avaliacao.deleteMany({
+      where: { avaliacao_loja: { loja: { usuario_id: id } } },
+    });
+
+    // 4. Avaliacoes das lojas do usuario
+    await this.prisma.avaliacao_Loja.deleteMany({
+      where: { loja: { usuario_id: id } },
+    });
+
+    // 5. Comentarios nas avaliacoes dos produtos das lojas do usuario
+    await this.prisma.comentario_Avaliacao.deleteMany({
+      where: { avaliacao_produto: { produto: { loja: { usuario_id: id } } } },
+    });
+
+    // 6. Avaliacoes dos produtos das lojas do usuario
+    await this.prisma.avaliacao_Produto.deleteMany({
+      where: { produto: { loja: { usuario_id: id } } },
+    });
+
+    // 7. Imagens dos produtos
+    await this.prisma.imagem_Produto.deleteMany({
+      where: { produto: { loja: { usuario_id: id } } },
+    });
+
+    // 8. Produtos das lojas
+    await this.prisma.produto.deleteMany({
+      where: { loja: { usuario_id: id } },
+    });
+
+    // 9. Lojas
+    await this.prisma.loja.deleteMany({ where: { usuario_id: id } });
+
+    // 10. Usuario
     await this.prisma.usuario.delete({ where: { id } });
+
     return { message: 'Conta deletada com sucesso' };
   }
 }
