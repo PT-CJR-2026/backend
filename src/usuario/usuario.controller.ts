@@ -59,8 +59,8 @@ export class UsuarioController {
     return this.usuarioService.updateNome(req.user.id, dto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuarioService.remove(+id);
+  @Delete('me')
+  remove(@Request() req, @Body() body: { senha_hash: string }) {
+    return this.usuarioService.remove(req.user.id, body.senha_hash);
   }
 }

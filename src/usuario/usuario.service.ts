@@ -123,8 +123,15 @@ export class UsuarioService {
     return { ...updated, senha_hash: undefined };
   }
 
-  async remove(id: number) {
+  async remove(id: number, senha_hash: string) {
+    const usuario = await this.prisma.usuario.findUnique({ where: { id } });
+
+    if (!usuario) throw new NotFoundException('Usuário não encontrado');
+
+    const senhaCorreta = await bcrypt.compare(senha_hash, usuario.senha_hash);
+    if (!senhaCorreta) throw new BadRequestException('Senha incorreta');
+
     await this.prisma.usuario.delete({ where: { id } });
-    return { message: `Usuário #${id} removido com sucesso` };
+    return { message: 'Conta deletada com sucesso' };
   }
 }
