@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ProdutoService } from './produto.service';
 import { CreateProdutoDto } from './dto/create-produto.dto';
 import { UpdateProdutoDto } from './dto/update-produto.dto';
+import { IsPublic } from '../auth/decorators/is-public.decorator';
 
 @Controller('produto')
 export class ProdutoController {
@@ -12,11 +21,13 @@ export class ProdutoController {
     return this.produtoService.create(createProdutoDto);
   }
 
+  @IsPublic()
   @Get()
   findAll() {
     return this.produtoService.findAll();
   }
 
+  @IsPublic()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.produtoService.findOne(+id);
