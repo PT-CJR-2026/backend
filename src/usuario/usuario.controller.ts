@@ -23,7 +23,7 @@ export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
   @IsPublic()
-  @Post()
+  @Post('cadastro')
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
   }
