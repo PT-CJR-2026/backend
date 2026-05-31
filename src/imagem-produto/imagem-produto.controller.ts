@@ -6,7 +6,7 @@ import { ImagemProdutoService } from './imagem-produto.service';
 import { CreateImagemProdutoDto } from './dto/create-imagem-produto.dto';
 import { UpdateImagemProdutoDto } from './dto/update-imagem-produto.dto';
 
-@Controller('produtos/:produto_id/imagens')
+@Controller('produto/:produto_id/imagens')
 export class ImagemProdutoController {
     constructor(private readonly imagemProdutoService: ImagemProdutoService) {}
 
