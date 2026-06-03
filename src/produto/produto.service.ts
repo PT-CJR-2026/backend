@@ -35,8 +35,10 @@ export class ProdutoService {
   }
 
   remove(id: number) {
-    return this.prisma.produto.delete({
-      where: { id },
-    });
+    return this.prisma.$transaction([
+      this.prisma.avaliacao_Produto.deleteMany({ where: { produto_id: id } }),
+      this.prisma.imagem_Produto.deleteMany({ where: { produto_id: id } }),
+      this.prisma.produto.delete({ where: { id } }),
+    ]);
   }
 }
