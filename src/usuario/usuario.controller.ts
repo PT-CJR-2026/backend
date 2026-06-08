@@ -1,7 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+} from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateSenhaDto, UpdateEmailDto, UpdateUsernameDto, UpdateNomeDto } from './dto/update-usuario.dto';
+import {
+  UpdateSenhaDto,
+  UpdateEmailDto,
+  UpdateUsernameDto,
+  UpdateNomeDto,
+} from './dto/update-usuario.dto';
 import { IsPublic } from '../auth/decorators/is-public.decorator';
 
 @Controller('usuario')
@@ -12,6 +26,11 @@ export class UsuarioController {
   @Post()
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
+  }
+
+  @Get('me')
+  getMe(@Request() req) {
+    return this.usuarioService.findById(req.user.id);
   }
 
   @Get()
@@ -40,8 +59,8 @@ export class UsuarioController {
     return this.usuarioService.updateNome(req.user.id, dto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuarioService.remove(+id);
+  @Delete('me')
+  remove(@Request() req, @Body() body: { senha_hash: string }) {
+    return this.usuarioService.remove(req.user.id, body.senha_hash);
   }
 }
