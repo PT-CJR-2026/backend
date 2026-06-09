@@ -121,6 +121,29 @@ export class LojaService {
     });
   }
 
+    // ─── HELPER: lojas do próprio usuário ─────────────────────────────────────
+
+  async findByCategoria(categoriaId: number) {
+    return this.prisma.loja.findMany({
+      where: {
+        produtos: {
+          some: {
+            categoria_id: categoriaId
+          }
+        }
+      },
+      orderBy: { created_at: 'desc' },
+      include: {
+        _count: {
+          select: {
+            produtos: true,
+            avaliacoes: true, // ✅ corrigido
+          },
+        },
+      },
+    });
+  }
+
   // ─── HELPER PRIVADO: checa se usuário é dono ──────────────────────────────
 
   private async checkOwnership(lojaId: number, usuarioId: number) {

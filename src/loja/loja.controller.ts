@@ -37,6 +37,12 @@ export class LojaController {
     return this.lojaService.findByUsuario(req.user.id);
   }
 
+  // GET /lojas/categoria/:categoriaId
+  @Get('categoria/:categoriaId')
+  findCategoria(@Param('categoriaId', ParseIntPipe) categoriaId: number) {
+    return this.lojaService.findByCategoria(categoriaId);
+  }
+
   // GET /lojas/:id
   @IsPublic()
   @Get(':id')
