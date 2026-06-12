@@ -23,7 +23,7 @@ export class ComentarioAvaliacaoService {
     return this.prisma.comentario_Avaliacao.findMany({
       where: { avaliacao_loja_id: avaliacaoLojaId },
       include: {
-        usuario: { // ATENÇÃO: Verifique no schema se a relação chama 'usuario' ou 'usuarios'
+        usuario: { 
           select: { username: true, foto_perfil_url: true }
         }
       },
