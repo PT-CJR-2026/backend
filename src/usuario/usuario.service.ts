@@ -43,6 +43,24 @@ export class UsuarioService {
     return usuario;
   }
 
+  // Busca perfil público por username — usado na página de perfil
+  // Nunca retorna senha_hash
+  async findByUsername(username: string) {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        nome: true,
+        username: true,
+        email: true,
+        foto_perfil_url: true,
+      },
+    });
+
+    if (!usuario) throw new NotFoundException('Usuário não encontrado');
+    return usuario;
+  }
+
   async findAll() {
     return this.prisma.usuario.findMany({
       select: { id: true, nome: true, email: true, username: true },
@@ -51,10 +69,6 @@ export class UsuarioService {
 
   findByEmail(email: string) {
     return this.prisma.usuario.findUnique({ where: { email } });
-  }
-
-  findByUsername(username: string) {
-    return this.prisma.usuario.findUnique({ where: { username } });
   }
 
   // Atualiza senha — valida a senha antiga antes
