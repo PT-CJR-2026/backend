@@ -74,7 +74,7 @@ export class UsuarioService {
                     nome: true,
                   },
                 },
-                imagens: {
+                imagem_produto: {
                   select: {
                     id: true,
                     url_imagem: true,
