@@ -30,6 +30,6 @@ export class AuthController {
   async refresh(@Request() req: AuthRequest) {
     // req.user vem do JwtAuthGuard que já valida o token atual
     // Busca os dados mais recentes do banco para gerar o novo token
-    return this.authService.refreshToken(req.user.id);
+    return this.authService.refreshToken(req.user.id!);
   }
 }
