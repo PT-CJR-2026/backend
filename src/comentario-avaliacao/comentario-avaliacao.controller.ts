@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ComentarioAvaliacaoService } from './comentario-avaliacao.service';
 import { CreateComentarioAvaliacaoDto } from './dto/create-comentario-avaliacao.dto';
 import { UpdateComentarioAvaliacaoDto } from './dto/update-comentario-avaliacao.dto';
+import { IsPublic } from '../auth/decorators/is-public.decorator';
 
 @Controller('comentario-avaliacao')
 export class ComentarioAvaliacaoController {
@@ -21,6 +22,14 @@ export class ComentarioAvaliacaoController {
   @Get('loja/:avaliacaoLojaId')
   findByAvaliacaoLoja(@Param('avaliacaoLojaId') avaliacaoLojaId: string) {
     return this.comentarioAvaliacaoService.findByAvaliacaoLoja(+avaliacaoLojaId);
+  }
+
+  @IsPublic()
+  @Get('produto/:avaliacaoProdutoId')
+  findByAvaliacaoProduto(
+    @Param('avaliacaoProdutoId') avaliacaoProdutoId: string,
+  ) {
+    return this.comentarioAvaliacaoService.findByAvaliacaoProduto(+avaliacaoProdutoId);
   }
 
   @Get(':id')
