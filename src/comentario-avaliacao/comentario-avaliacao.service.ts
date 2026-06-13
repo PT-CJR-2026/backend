@@ -43,8 +43,6 @@ export class ComentarioAvaliacaoService {
   });
 }
 
-  
-
   findOne(id: number) {
     return this.prisma.comentario_Avaliacao.findUnique({
       where: { id },
