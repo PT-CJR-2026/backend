@@ -17,6 +17,16 @@ export class AvaliacaoProdutoController {
   findAll() {
     return this.avaliacaoProdutoService.findAll();
   }
+@Get('produto/:produtoId')
+  findByProduto(@Param('produtoId') produtoId: string) {
+    return this.avaliacaoProdutoService.findByProduto(+produtoId);
+  }
+
+  @IsPublic()
+  @Get(':id/completo')
+  findCompleto(@Param('id') id: string) {
+    return this.avaliacaoProdutoService.findCompleto(+id);
+  }
 
   @IsPublic()
   @Get(':id')
@@ -32,16 +42,5 @@ export class AvaliacaoProdutoController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.avaliacaoProdutoService.remove(+id);
-  }
-
-  @Get('produto/:produtoId')
-  findByProduto(@Param('produtoId') produtoId: string) {
-    return this.avaliacaoProdutoService.findByProduto(+produtoId);
-  }
-
-  @IsPublic()
-  @Get(':id/completo')
-  findCompleto(@Param('id') id: string) {
-    return this.avaliacaoProdutoService.findCompleto(+id);
   }
 }

@@ -31,6 +31,18 @@ export class ComentarioAvaliacaoService {
     });
   }
 
+  async findByAvaliacaoProduto(avaliacaoProdutoId: number) {
+  return this.prisma.comentario_Avaliacao.findMany({
+    where: { avaliacao_produto_id: avaliacaoProdutoId },
+    include: {
+      usuario: {
+        select: { username: true, foto_perfil_url: true }
+      }
+    },
+    orderBy: { created_at: 'asc' }
+  });
+}
+
   findOne(id: number) {
     return this.prisma.comentario_Avaliacao.findUnique({
       where: { id },

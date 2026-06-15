@@ -18,10 +18,18 @@ export class AvaliacaoProdutoService {
   }
 
   findOne(id: number) {
-    return this.prisma.avaliacao_Produto.findUnique({
-      where: { id },
-    });
-  }
+  return this.prisma.avaliacao_Produto.findUnique({
+    where: { id },
+    include: {
+      usuario: {
+        select: {
+          username: true,
+          foto_perfil_url: true,
+        },
+      },
+    },
+  });
+}
 
   async findByProduto(produtoId: number) {
     return this.prisma.avaliacao_Produto.findMany({
