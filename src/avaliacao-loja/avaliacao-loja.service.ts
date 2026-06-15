@@ -23,6 +23,17 @@ export class AvaliacaoLojaService {
     });
   }
 
+  async findByLoja(lojaId: number) {
+    return this.prisma.avaliacao_Loja.findMany({
+      where: { loja_id: lojaId },
+      include: {
+        usuario: true,
+        comentario_avaliacao: { include: { usuario: true } },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+  }
+
   update(id: number, updateAvaliacaoLojaDto: UpdateAvaliacaoLojaDto) {
     return this.prisma.avaliacao_Loja.update({
       where: { id },
