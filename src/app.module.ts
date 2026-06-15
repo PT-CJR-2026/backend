@@ -12,10 +12,11 @@ import { AvaliacaoLojaModule } from './avaliacao-loja/avaliacao-loja.module';
 import { AvaliacaoProdutoModule } from './avaliacao-produto/avaliacao-produto.module';
 import { LojaModule } from './loja/loja.module';
 import { ComentarioAvaliacaoModule } from './comentario-avaliacao/comentario-avaliacao.module';
+import { ImagemProdutoModule } from './imagem-produto/imagem-produto.module';
 
 
 @Module({
-  imports: [PrismaModule, UsuarioModule, AuthModule, ProdutoModule, CategoriaModule, AvaliacaoLojaModule, AvaliacaoProdutoModule, LojaModule, ComentarioAvaliacaoModule],
+  imports: [PrismaModule, UsuarioModule, AuthModule, ProdutoModule, CategoriaModule, AvaliacaoLojaModule, AvaliacaoProdutoModule, LojaModule, ComentarioAvaliacaoModule, ImagemProdutoModule,],
   controllers: [AppController],
   providers: [
     AppService,
