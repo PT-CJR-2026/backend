@@ -25,21 +25,26 @@ export class LojaService {
   // ─── READ (lista todas) ────────────────────────────────────────────────────
 
   async findAll() {
-    return this.prisma.loja.findMany({
-      orderBy: { created_at: 'desc' },
-      include: {
-        usuario: {
-          select: { id: true, username: true, foto_perfil_url: true },
-        },
-        _count: {
-          select: {
-            produtos: true,
-            avaliacoes: true, // ✅ corrigido
+  const lojas = await this.prisma.loja.findMany({
+    include: {
+      produtos: {
+        take: 1,
+        include: {
+          categoria: {
+            include: { categoria_pai: true }, // busca a categoria pai também
           },
         },
       },
-    });
-  }
+      _count: { select: { produtos: true, avaliacoes: true } },
+    },
+  });
+
+  return lojas.map((loja) => {
+    const cat = loja.produtos[0]?.categoria;
+    const nomeExibido = cat?.categoria_pai?.nome ?? cat?.nome ?? null;
+    return { ...loja, categoria: nomeExibido };
+  });
+}
 
   // ─── READ (uma loja) ───────────────────────────────────────────────────────
 
@@ -59,7 +64,7 @@ export class LojaService {
           },
         },
 
-        avaliacoes: { // ✅ corrigido
+        avaliacoes: { 
           orderBy: { created_at: 'desc' },
           include: {
             usuario: {
@@ -70,7 +75,7 @@ export class LojaService {
         _count: {
           select: {
             produtos: true,
-            avaliacoes: true, // ✅ corrigido
+            avaliacoes: true, 
           },
         },
       },
@@ -135,7 +140,7 @@ export class LojaService {
     where: {
       produtos: {
         some: {
-          categoria_id: { in: ids }, // ← agora inclui subcategorias também
+          categoria_id: { in: ids },
         },
       },
     },
