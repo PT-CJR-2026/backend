@@ -114,7 +114,7 @@ export class LojaService {
         _count: {
           select: {
             produtos: true,
-            avaliacoes: true, // ✅ corrigido
+            avaliacoes: true,
           },
         },
       },
@@ -124,25 +124,32 @@ export class LojaService {
     // ─── HELPER: lojas do próprio usuário ─────────────────────────────────────
 
   async findByCategoria(categoriaId: number) {
-    return this.prisma.loja.findMany({
-      where: {
-        produtos: {
-          some: {
-            categoria_id: categoriaId
-          }
-        }
-      },
-      orderBy: { created_at: 'desc' },
-      include: {
-        _count: {
-          select: {
-            produtos: true,
-            avaliacoes: true, // ✅ corrigido
-          },
+  // Busca subcategorias da categoria pai
+  const subcategorias = await this.prisma.categoria.findMany({
+    where: { categoria_pai_id: categoriaId },
+  });
+
+  const ids = [categoriaId, ...subcategorias.map((s) => s.id)];
+
+  return this.prisma.loja.findMany({
+    where: {
+      produtos: {
+        some: {
+          categoria_id: { in: ids }, // ← agora inclui subcategorias também
         },
       },
-    });
-  }
+    },
+    orderBy: { created_at: 'desc' },
+    include: {
+      _count: {
+        select: {
+          produtos: true,
+          avaliacoes: true,
+        },
+      },
+    },
+  });
+}
 
   // ─── HELPER PRIVADO: checa se usuário é dono ──────────────────────────────
 

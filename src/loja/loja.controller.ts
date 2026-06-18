@@ -38,6 +38,7 @@ export class LojaController {
   }
 
   // GET /lojas/categoria/:categoriaId
+  @IsPublic()
   @Get('categoria/:categoriaId')
   findCategoria(@Param('categoriaId', ParseIntPipe) categoriaId: number) {
     return this.lojaService.findByCategoria(categoriaId);
