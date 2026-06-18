@@ -23,6 +23,7 @@ export class AvaliacaoProdutoService {
     include: {
       usuario: {
         select: {
+          id: true,
           username: true,
           foto_perfil_url: true,
         },
