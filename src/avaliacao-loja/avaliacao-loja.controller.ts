@@ -22,6 +22,11 @@ export class AvaliacaoLojaController {
     return this.avaliacaoLojaService.findOne(+id);
   }
 
+  @Get('loja/:lojaId')
+  findByLoja(@Param('lojaId') lojaId: string) {
+    return this.avaliacaoLojaService.findByLoja(+lojaId);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAvaliacaoLojaDto: UpdateAvaliacaoLojaDto) {
     return this.avaliacaoLojaService.update(+id, updateAvaliacaoLojaDto);

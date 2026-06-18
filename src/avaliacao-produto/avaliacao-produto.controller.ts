@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AvaliacaoProdutoService } from './avaliacao-produto.service';
 import { CreateAvaliacaoProdutoDto } from './dto/create-avaliacao-produto.dto';
 import { UpdateAvaliacaoProdutoDto } from './dto/update-avaliacao-produto.dto';
+import { IsPublic } from '../auth/decorators/is-public.decorator';
 
 @Controller('avaliacao-produto')
 export class AvaliacaoProdutoController {
@@ -16,7 +17,18 @@ export class AvaliacaoProdutoController {
   findAll() {
     return this.avaliacaoProdutoService.findAll();
   }
+@Get('produto/:produtoId')
+  findByProduto(@Param('produtoId') produtoId: string) {
+    return this.avaliacaoProdutoService.findByProduto(+produtoId);
+  }
 
+  @IsPublic()
+  @Get(':id/completo')
+  findCompleto(@Param('id') id: string) {
+    return this.avaliacaoProdutoService.findCompleto(+id);
+  }
+
+  @IsPublic()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.avaliacaoProdutoService.findOne(+id);

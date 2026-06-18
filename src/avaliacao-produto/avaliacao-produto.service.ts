@@ -18,8 +18,51 @@ export class AvaliacaoProdutoService {
   }
 
   findOne(id: number) {
+  return this.prisma.avaliacao_Produto.findUnique({
+    where: { id },
+    include: {
+      usuario: {
+        select: {
+          username: true,
+          foto_perfil_url: true,
+        },
+      },
+    },
+  });
+}
+
+  async findByProduto(produtoId: number) {
+    return this.prisma.avaliacao_Produto.findMany({
+      where: {
+        produto_id: produtoId,
+      },
+      include: {
+        usuario: true,
+        comentario_avaliacao: {
+          include: {
+            usuario: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+  }
+
+  async findCompleto(id: number) {
     return this.prisma.avaliacao_Produto.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
+      include: {
+        usuario: true,
+        comentario_avaliacao: {
+          include: {
+            usuario: true,
+          },
+        },
+      },
     });
   }
 
