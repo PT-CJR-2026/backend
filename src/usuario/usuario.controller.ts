@@ -38,6 +38,20 @@ export class UsuarioController {
     return this.usuarioService.findAll();
   }
 
+  // IMPORTANTE: rotas estáticas ('me', 'username/:username') devem vir
+  // ANTES de ':id', senão o NestJS interpreta a string como id e quebra
+  @IsPublic()
+  @Get('username/:username')
+  findByUsername(@Param('username') username: string) {
+    return this.usuarioService.findByUsername(username);
+  }
+
+  @IsPublic()
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    return this.usuarioService.findById(+id);
+  }
+
   // Pega o id do token JWT — mais seguro que pegar da URL
   @Patch('atualizar-senha')
   updateSenha(@Request() req, @Body() dto: UpdateSenhaDto) {

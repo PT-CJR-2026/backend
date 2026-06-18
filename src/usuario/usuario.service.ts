@@ -43,6 +43,58 @@ export class UsuarioService {
     return usuario;
   }
 
+  // Busca perfil público por username — usado na página de perfil
+  // Retorna dados do usuário + lojas + produtos de cada loja + imagens dos produtos
+  async findByUsername(username: string) {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        nome: true,
+        username: true,
+        email: true,
+        foto_perfil_url: true,
+        lojas: {
+          select: {
+            id: true,
+            nome: true,
+            descricao: true,
+            logo_url: true,
+            banner_url: true,
+            produtos: {
+              select: {
+                id: true,
+                nome: true,
+                descricao: true,
+                preco: true,
+                estoque: true,
+                categoria: {
+                  select: {
+                    id: true,
+                    nome: true,
+                  },
+                },
+                imagem_produto: {
+                  select: {
+                    id: true,
+                    url_imagem: true,
+                    ordem: true,
+                  },
+                  orderBy: {
+                    ordem: 'asc',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!usuario) throw new NotFoundException('Usuário não encontrado');
+    return usuario;
+  }
+
   async findAll() {
     return this.prisma.usuario.findMany({
       select: { id: true, nome: true, email: true, username: true },
@@ -51,10 +103,6 @@ export class UsuarioService {
 
   findByEmail(email: string) {
     return this.prisma.usuario.findUnique({ where: { email } });
-  }
-
-  findByUsername(username: string) {
-    return this.prisma.usuario.findUnique({ where: { username } });
   }
 
   // Atualiza senha — valida a senha antiga antes
@@ -131,7 +179,9 @@ export class UsuarioService {
     const senhaCorreta = await bcrypt.compare(senha_hash, usuario.senha_hash);
     if (!senhaCorreta) throw new BadRequestException('Senha incorreta');
 
-    // o Conjunto abaixo deleta o usuário e todas as suas dependências, seguindo a ordem correta para evitar erros de integridade referencial.
+    // Deleta o usuário e todas as suas dependências na ordem correta
+    // para evitar erros de integridade referencial
+
     // 1. Comentários
     await this.prisma.comentario_Avaliacao.deleteMany({
       where: { usuario_id: id },
