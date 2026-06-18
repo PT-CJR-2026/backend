@@ -54,6 +54,51 @@ export class UsuarioService {
         username: true,
         email: true,
         foto_perfil_url: true,
+        avaliacao_loja: {
+          select: {
+            id: true,
+            nota: true,
+            comentario: true,
+            created_at: true,
+            loja: {
+              select: {
+                id: true,
+                nome: true,
+                logo_url: true,
+              },
+            },
+          },
+          orderBy: {
+            created_at: 'desc',
+          },
+        },
+        avaliacao_produto: {
+          select: {
+            id: true,
+            nota: true,
+            comentario: true,
+            created_at: true,
+            produto: {
+              select: {
+                id: true,
+                nome: true,
+                imagem_produto: {
+                  select: {
+                    url_imagem: true,
+                    ordem: true,
+                  },
+                  orderBy: {
+                    ordem: 'asc',
+                  },
+                  take: 1,
+                },
+              },
+            },
+          },
+          orderBy: {
+            created_at: 'desc',
+          },
+        },
         lojas: {
           select: {
             id: true,
