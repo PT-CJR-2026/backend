@@ -25,21 +25,26 @@ export class LojaService {
   // ─── READ (lista todas) ────────────────────────────────────────────────────
 
   async findAll() {
-    return this.prisma.loja.findMany({
-      orderBy: { created_at: 'desc' },
-      include: {
-        usuario: {
-          select: { id: true, username: true, foto_perfil_url: true },
-        },
-        _count: {
-          select: {
-            produtos: true,
-            avaliacoes: true, // ✅ corrigido
+  const lojas = await this.prisma.loja.findMany({
+    include: {
+      produtos: {
+        take: 1,
+        include: {
+          categoria: {
+            include: { categoria_pai: true }, // busca a categoria pai também
           },
         },
       },
-    });
-  }
+      _count: { select: { produtos: true, avaliacoes: true } },
+    },
+  });
+
+  return lojas.map((loja) => {
+    const cat = loja.produtos[0]?.categoria;
+    const nomeExibido = cat?.categoria_pai?.nome ?? cat?.nome ?? null;
+    return { ...loja, categoria: nomeExibido };
+  });
+}
 
   // ─── READ (uma loja) ───────────────────────────────────────────────────────
 
@@ -59,7 +64,7 @@ export class LojaService {
           },
         },
 
-        avaliacoes: { // ✅ corrigido
+        avaliacoes: { 
           orderBy: { created_at: 'desc' },
           include: {
             usuario: {
@@ -70,7 +75,7 @@ export class LojaService {
         _count: {
           select: {
             produtos: true,
-            avaliacoes: true, // ✅ corrigido
+            avaliacoes: true, 
           },
         },
       },
@@ -114,7 +119,7 @@ export class LojaService {
         _count: {
           select: {
             produtos: true,
-            avaliacoes: true, // ✅ corrigido
+            avaliacoes: true,
           },
         },
       },
@@ -124,25 +129,32 @@ export class LojaService {
     // ─── HELPER: lojas do próprio usuário ─────────────────────────────────────
 
   async findByCategoria(categoriaId: number) {
-    return this.prisma.loja.findMany({
-      where: {
-        produtos: {
-          some: {
-            categoria_id: categoriaId
-          }
-        }
-      },
-      orderBy: { created_at: 'desc' },
-      include: {
-        _count: {
-          select: {
-            produtos: true,
-            avaliacoes: true, // ✅ corrigido
-          },
+  // Busca subcategorias da categoria pai
+  const subcategorias = await this.prisma.categoria.findMany({
+    where: { categoria_pai_id: categoriaId },
+  });
+
+  const ids = [categoriaId, ...subcategorias.map((s) => s.id)];
+
+  return this.prisma.loja.findMany({
+    where: {
+      produtos: {
+        some: {
+          categoria_id: { in: ids },
         },
       },
-    });
-  }
+    },
+    orderBy: { created_at: 'desc' },
+    include: {
+      _count: {
+        select: {
+          produtos: true,
+          avaliacoes: true,
+        },
+      },
+    },
+  });
+}
 
   // ─── HELPER PRIVADO: checa se usuário é dono ──────────────────────────────
 

@@ -28,6 +28,12 @@ export class ProdutoController {
   }
 
   @IsPublic()
+  @Get('categoria/:categoriaId')
+  findByCategoria(@Param('categoriaId') categoriaId: string) {
+    return this.produtoService.findByCategoria(+categoriaId);
+  }
+
+  @IsPublic()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.produtoService.findOne(+id);

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
 import { ComentarioAvaliacaoService } from './comentario-avaliacao.service';
 import { CreateComentarioAvaliacaoDto } from './dto/create-comentario-avaliacao.dto';
 import { UpdateComentarioAvaliacaoDto } from './dto/update-comentario-avaliacao.dto';
@@ -9,8 +9,11 @@ export class ComentarioAvaliacaoController {
   constructor(private readonly comentarioAvaliacaoService: ComentarioAvaliacaoService) {}
 
   @Post()
-  create(@Body() createDto: CreateComentarioAvaliacaoDto) {
-    return this.comentarioAvaliacaoService.create(createDto);
+  create(@Body() createDto: CreateComentarioAvaliacaoDto, @Request() req) {
+    return this.comentarioAvaliacaoService.create({
+      ...createDto,
+      usuario_id: req.user.id,
+    });
   }
 
   @Get()

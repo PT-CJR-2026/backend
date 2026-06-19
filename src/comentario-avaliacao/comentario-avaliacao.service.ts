@@ -9,7 +9,10 @@ export class ComentarioAvaliacaoService {
 
   create(createDto: CreateComentarioAvaliacaoDto) {
     return this.prisma.comentario_Avaliacao.create({
-      data: createDto,
+      data: {
+        ...createDto,
+        usuario_id: createDto.usuario_id!,
+      },
     });
   }
 
@@ -24,7 +27,11 @@ export class ComentarioAvaliacaoService {
       where: { avaliacao_loja_id: avaliacaoLojaId },
       include: {
         usuario: { 
-          select: { username: true, foto_perfil_url: true }
+            select: {
+            id: true,
+            username: true,
+            foto_perfil_url: true,
+          }
         }
       },
       orderBy: { created_at: 'asc' } // Traz do mais antigo pro mais novo (padrão de chat)
@@ -36,7 +43,11 @@ export class ComentarioAvaliacaoService {
     where: { avaliacao_produto_id: avaliacaoProdutoId },
     include: {
       usuario: {
-        select: { username: true, foto_perfil_url: true }
+        select: {
+          id: true,
+          username: true,
+          foto_perfil_url: true,
+        }
       }
     },
     orderBy: { created_at: 'asc' }
