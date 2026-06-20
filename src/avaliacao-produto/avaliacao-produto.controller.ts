@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
 import { AvaliacaoProdutoService } from './avaliacao-produto.service';
 import { CreateAvaliacaoProdutoDto } from './dto/create-avaliacao-produto.dto';
 import { UpdateAvaliacaoProdutoDto } from './dto/update-avaliacao-produto.dto';
@@ -9,9 +9,12 @@ export class AvaliacaoProdutoController {
   constructor(private readonly avaliacaoProdutoService: AvaliacaoProdutoService) {}
 
   @Post()
-  create(@Body() createAvaliacaoProdutoDto: CreateAvaliacaoProdutoDto) {
-    return this.avaliacaoProdutoService.create(createAvaliacaoProdutoDto);
-  }
+create(@Body() createAvaliacaoProdutoDto: CreateAvaliacaoProdutoDto, @Request() req) {
+  return this.avaliacaoProdutoService.create({
+    ...createAvaliacaoProdutoDto,
+    usuario_id: req.user.id,
+  });
+}
 
   @Get()
   findAll() {
