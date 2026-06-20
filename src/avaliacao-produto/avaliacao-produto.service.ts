@@ -8,10 +8,10 @@ export class AvaliacaoProdutoService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createAvaliacaoProdutoDto: CreateAvaliacaoProdutoDto) {
-    return this.prisma.avaliacao_Produto.create({
-      data: createAvaliacaoProdutoDto,
-    });
-  }
+  return this.prisma.avaliacao_Produto.create({
+    data: createAvaliacaoProdutoDto as Required<CreateAvaliacaoProdutoDto>,
+  });
+}
 
   findAll() {
     return this.prisma.avaliacao_Produto.findMany();
