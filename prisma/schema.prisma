@@ -3,22 +3,143 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // Define o provedor como PostgreSQL
-  url      = env("DATABASE_URL") // Lê a string de conexão do arquivo .env
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  posts Post[]
+// As palavras nao devem conter acentos
+// Todos os modelos devem iniciar com letra maiuscula, no singular e usar o formato "Usuario", "Avaliacao_Loja"
+// Todos os atributos devem estar no formato "foto_perfil", "url_produto", "username"
+
+model Usuario {
+  id                Int          @id @default(autoincrement())
+  username          String       @db.VarChar(50) @unique
+  nome              String       @db.VarChar(255)
+  email             String       @db.VarChar(255) @unique
+  senha_hash        String       @db.VarChar(255)
+  foto_perfil_url   String?      @db.VarChar(255)
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+
+  lojas                   Loja[]
+  avaliacao_loja          Avaliacao_Loja[]
+  avaliacao_produto       Avaliacao_Produto[]
+  comentario_avaliacao    Comentario_Avaliacao[]
+
+  @@map("usuarios")
 }
 
-model Post {
-  id       Int     @id @default(autoincrement())
-  title    String
-  content  String
-  author   User    @relation(fields: [authorId], references: [id])
-  authorId Int
+model Loja {
+  id                Int          @id @default(autoincrement())
+  usuario_id        Int          //
+  nome              String       @db.VarChar(255)
+  descricao         String?      @db.Text
+  logo_url          String?      @db.VarChar(255)
+  banner_url        String?      @db.VarChar(255)
+  sticker_url       String?      @db.VarChar(255)
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+
+  usuario           Usuario     @relation(fields: [usuario_id], references: [id])
+
+  avaliacoes        Avaliacao_Loja[]
+  produtos          Produto[]
+
+  @@map("lojas")
 }
 
-// o prisma esta incompleto, ainda falta a parte da migracao
+model Avaliacao_Loja {
+  id                Int          @id @default(autoincrement())
+  usuario_id        Int          //
+  loja_id           Int          //
+  nota              Int          //
+  comentario        String?      @db.Text
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+
+
+  usuario           Usuario     @relation(fields: [usuario_id], references: [id])
+  loja              Loja        @relation(fields: [loja_id], references: [id])
+
+  comentario_avaliacao        Comentario_Avaliacao[]
+
+  @@map("avaliacoes_loja")
+}
+
+model Categoria {
+  id                Int          @id @default(autoincrement())
+  nome              String       @db.VarChar(100)
+  categoria_pai_id  Int?         //
+
+  categoria_pai     Categoria?   @relation("filho_para_pai", fields: [categoria_pai_id], references: [id])
+  categoria_filho   Categoria[]  @relation("filho_para_pai")
+
+  produto           Produto[]
+
+  @@map("categorias")
+}
+
+model Produto{
+  id                Int         @id @default(autoincrement())
+  loja_id           Int         //
+  categoria_id      Int         //
+  nome              String      @db.VarChar(255)
+  descricao         String?     @db.Text
+  preco             Decimal     @db.Decimal(10,2)
+  estoque           Int         //
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
+  
+  loja              Loja        @relation(fields: [loja_id], references: [id])
+  categoria         Categoria   @relation(fields: [categoria_id], references: [id])
+
+  avaliacao_produto Avaliacao_Produto[]
+  imagem_produto    Imagem_Produto[]
+
+  @@map("produtos")
+}
+
+model Avaliacao_Produto {
+  id                Int         @id @default(autoincrement())
+  usuario_id        Int         //
+  produto_id        Int         //
+  nota              Int         //
+  comentario        String?     @db.Text
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
+
+  usuario           Usuario     @relation(fields: [usuario_id], references: [id])
+  produto           Produto     @relation(fields: [produto_id], references: [id])
+
+  comentario_avaliacao Comentario_Avaliacao[]
+
+  @@map("avaliacoes_produto")
+}
+
+model Imagem_Produto {
+  id                Int         @id @default(autoincrement())
+  produto_id        Int         //
+  url_imagem        String      @db.VarChar(255)
+  ordem             Int         //
+
+  produto           Produto     @relation(fields: [produto_id], references: [id])
+
+  @@map("imagens_produto")
+}
+
+model Comentario_Avaliacao {
+  id                   Int        @id @default(autoincrement())
+  usuario_id           Int        //
+  avaliacao_loja_id    Int?       //
+  avaliacao_produto_id Int?       //
+  conteudo             String     @db.Text
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+
+  usuario              Usuario              @relation(fields: [usuario_id], references: [id])
+  avaliacao_loja       Avaliacao_Loja?      @relation(fields: [avaliacao_loja_id], references: [id])
+  avaliacao_produto    Avaliacao_Produto?   @relation(fields: [avaliacao_produto_id], references: [id])
+
+  @@map("comentarios_avaliacao")
+}
