@@ -9,7 +9,7 @@ export class AvaliacaoLojaService {
 
   create(createAvaliacaoLojaDto: CreateAvaliacaoLojaDto) {
     return this.prisma.avaliacao_Loja.create({
-      data: createAvaliacaoLojaDto,
+      data: createAvaliacaoLojaDto as Required<CreateAvaliacaoLojaDto>,
     });
   }
 
