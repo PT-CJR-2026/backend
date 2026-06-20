@@ -17,7 +17,9 @@ export class AvaliacaoProdutoController {
   findAll() {
     return this.avaliacaoProdutoService.findAll();
   }
-@Get('produto/:produtoId')
+
+  @IsPublic()
+  @Get('produto/:produtoId')
   findByProduto(@Param('produtoId') produtoId: string) {
     return this.avaliacaoProdutoService.findByProduto(+produtoId);
   }
