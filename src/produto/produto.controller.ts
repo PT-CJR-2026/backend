@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProdutoService } from './produto.service';
 import { CreateProdutoDto } from './dto/create-produto.dto';
@@ -43,6 +44,19 @@ export class ProdutoController {
   @Get('recem-adicionados')
   findRecemAdicionados() {
     return this.produtoService.findRecemAdicionados();
+  }
+
+  @IsPublic()
+  @Get('busca')
+  findByTermo(@Query('q') q: string) {
+    return this.produtoService.findByTermo(q ?? '');
+  }
+
+  @IsPublic()
+  @Get('sugestoes')
+  findSugestoes(@Query('q') q: string, @Query('limit') limit?: string) {
+    const limiteNumerico = limit ? parseInt(limit, 10) : 5;
+    return this.produtoService.findSugestoes(q ?? '', limiteNumerico);
   }
 
   @IsPublic()
