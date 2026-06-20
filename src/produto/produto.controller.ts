@@ -28,6 +28,24 @@ export class ProdutoController {
   }
 
   @IsPublic()
+  @Get('melhores-avaliados')
+  findMelhoresAvaliados() {
+    return this.produtoService.findMelhoresAvaliados();
+  }
+
+  @IsPublic()
+  @Get('mais-baratos')
+  findMaisBaratos() {
+    return this.produtoService.findMaisBaratos();
+  }
+
+  @IsPublic()
+  @Get('recem-adicionados')
+  findRecemAdicionados() {
+    return this.produtoService.findRecemAdicionados();
+  }
+
+  @IsPublic()
   @Get('categoria/:categoriaId')
   findByCategoria(@Param('categoriaId') categoriaId: string) {
     return this.produtoService.findByCategoria(+categoriaId);

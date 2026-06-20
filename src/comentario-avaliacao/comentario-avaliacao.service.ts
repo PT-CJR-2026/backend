@@ -7,56 +7,63 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ComentarioAvaliacaoService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createDto: CreateComentarioAvaliacaoDto) {
+  create(createDto: CreateComentarioAvaliacaoDto, usuarioId: number) {
     return this.prisma.comentario_Avaliacao.create({
       data: {
         ...createDto,
-        usuario_id: createDto.usuario_id!,
+        usuario_id: usuarioId,
       },
     });
   }
 
-  // Método padrão (traz todos os comentários do banco inteiro - pouco usado na UI)
   findAll() {
     return this.prisma.comentario_Avaliacao.findMany();
   }
 
-  // MÉTODO EXTRA PARA A UI: Busca comentários específicos de uma avaliação de LOJA
   findByAvaliacaoLoja(avaliacaoLojaId: number) {
     return this.prisma.comentario_Avaliacao.findMany({
       where: { avaliacao_loja_id: avaliacaoLojaId },
       include: {
-        usuario: { 
-            select: {
+        usuario: {
+          select: {
             id: true,
             username: true,
             foto_perfil_url: true,
           }
         }
       },
-      orderBy: { created_at: 'asc' } // Traz do mais antigo pro mais novo (padrão de chat)
+      orderBy: { created_at: 'asc' }
     });
   }
 
   async findByAvaliacaoProduto(avaliacaoProdutoId: number) {
-  return this.prisma.comentario_Avaliacao.findMany({
-    where: { avaliacao_produto_id: avaliacaoProdutoId },
-    include: {
-      usuario: {
-        select: {
-          id: true,
-          username: true,
-          foto_perfil_url: true,
+    return this.prisma.comentario_Avaliacao.findMany({
+      where: { avaliacao_produto_id: avaliacaoProdutoId },
+      include: {
+        usuario: {
+          select: {
+            id: true,
+            username: true,
+            foto_perfil_url: true,
+          }
         }
-      }
-    },
-    orderBy: { created_at: 'asc' }
-  });
-}
+      },
+      orderBy: { created_at: 'asc' }
+    });
+  }
 
   findOne(id: number) {
     return this.prisma.comentario_Avaliacao.findUnique({
       where: { id },
+      include: {
+        usuario: {
+          select: {
+            id: true,
+            username: true,
+            foto_perfil_url: true,
+          }
+        }
+      },
     });
   }
 

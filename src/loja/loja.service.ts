@@ -25,26 +25,26 @@ export class LojaService {
   // ─── READ (lista todas) ────────────────────────────────────────────────────
 
   async findAll() {
-  const lojas = await this.prisma.loja.findMany({
-    include: {
-      produtos: {
-        take: 1,
-        include: {
-          categoria: {
-            include: { categoria_pai: true }, // busca a categoria pai também
+    const lojas = await this.prisma.loja.findMany({
+      include: {
+        produtos: {
+          take: 1,
+          include: {
+            categoria: {
+              include: { categoria_pai: true },
+            },
           },
         },
+        _count: { select: { produtos: true, avaliacoes: true } },
       },
-      _count: { select: { produtos: true, avaliacoes: true } },
-    },
-  });
+    });
 
-  return lojas.map((loja) => {
-    const cat = loja.produtos[0]?.categoria;
-    const nomeExibido = cat?.categoria_pai?.nome ?? cat?.nome ?? null;
-    return { ...loja, categoria: nomeExibido };
-  });
-}
+    return lojas.map((loja) => {
+      const cat = loja.produtos[0]?.categoria;
+      const nomeExibido = cat?.categoria_pai?.nome ?? cat?.nome ?? null;
+      return { ...loja, categoria: nomeExibido };
+    });
+  }
 
   // ─── READ (uma loja) ───────────────────────────────────────────────────────
 
@@ -64,7 +64,7 @@ export class LojaService {
           },
         },
 
-        avaliacoes: { 
+        avaliacoes: {
           orderBy: { created_at: 'desc' },
           include: {
             usuario: {
@@ -75,7 +75,7 @@ export class LojaService {
         _count: {
           select: {
             produtos: true,
-            avaliacoes: true, 
+            avaliacoes: true,
           },
         },
       },
@@ -104,9 +104,46 @@ export class LojaService {
   async remove(id: number, usuarioId: number) {
     await this.checkOwnership(id, usuarioId);
 
-    return this.prisma.loja.delete({
-      where: { id },
+    const [avaliacoesLoja, produtos] = await Promise.all([
+      this.prisma.avaliacao_Loja.findMany({
+        where: { loja_id: id },
+        select: { id: true },
+      }),
+      this.prisma.produto.findMany({
+        where: { loja_id: id },
+        select: { id: true },
+      }),
+    ]);
+
+    const avaliacaoLojaIds = avaliacoesLoja.map((a) => a.id);
+    const produtoIds = produtos.map((p) => p.id);
+
+    const avaliacoesProduto = await this.prisma.avaliacao_Produto.findMany({
+      where: { produto_id: { in: produtoIds } },
+      select: { id: true },
     });
+    const avaliacaoProdutoIds = avaliacoesProduto.map((a) => a.id);
+
+    return this.prisma.$transaction([
+      this.prisma.comentario_Avaliacao.deleteMany({
+        where: { avaliacao_loja_id: { in: avaliacaoLojaIds } },
+      }),
+      this.prisma.comentario_Avaliacao.deleteMany({
+        where: { avaliacao_produto_id: { in: avaliacaoProdutoIds } },
+      }),
+      // depois avaliações
+      this.prisma.avaliacao_Loja.deleteMany({ where: { loja_id: id } }),
+      this.prisma.avaliacao_Produto.deleteMany({
+        where: { produto_id: { in: produtoIds } },
+      }),
+      // depois imagens e produtos
+      this.prisma.imagem_Produto.deleteMany({
+        where: { produto_id: { in: produtoIds } },
+      }),
+      this.prisma.produto.deleteMany({ where: { loja_id: id } }),
+      // por fim a loja
+      this.prisma.loja.delete({ where: { id } }),
+    ]);
   }
 
   // ─── HELPER: lojas do próprio usuário ─────────────────────────────────────
@@ -126,35 +163,34 @@ export class LojaService {
     });
   }
 
-    // ─── HELPER: lojas do próprio usuário ─────────────────────────────────────
+  // ─── HELPER: lojas por categoria (via produtos) ───────────────────────────
 
   async findByCategoria(categoriaId: number) {
-  // Busca subcategorias da categoria pai
-  const subcategorias = await this.prisma.categoria.findMany({
-    where: { categoria_pai_id: categoriaId },
-  });
+    const subcategorias = await this.prisma.categoria.findMany({
+      where: { categoria_pai_id: categoriaId },
+    });
 
-  const ids = [categoriaId, ...subcategorias.map((s) => s.id)];
+    const ids = [categoriaId, ...subcategorias.map((s) => s.id)];
 
-  return this.prisma.loja.findMany({
-    where: {
-      produtos: {
-        some: {
-          categoria_id: { in: ids },
+    return this.prisma.loja.findMany({
+      where: {
+        produtos: {
+          some: {
+            categoria_id: { in: ids },
+          },
         },
       },
-    },
-    orderBy: { created_at: 'desc' },
-    include: {
-      _count: {
-        select: {
-          produtos: true,
-          avaliacoes: true,
+      orderBy: { created_at: 'desc' },
+      include: {
+        _count: {
+          select: {
+            produtos: true,
+            avaliacoes: true,
+          },
         },
       },
-    },
-  });
-}
+    });
+  }
 
   // ─── HELPER PRIVADO: checa se usuário é dono ──────────────────────────────
 

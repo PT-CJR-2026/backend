@@ -10,18 +10,16 @@ export class ComentarioAvaliacaoController {
 
   @Post()
   create(@Body() createDto: CreateComentarioAvaliacaoDto, @Request() req) {
-    return this.comentarioAvaliacaoService.create({
-      ...createDto,
-      usuario_id: req.user.id,
-    });
+    return this.comentarioAvaliacaoService.create(createDto, req.user.id);
   }
 
+  @IsPublic()
   @Get()
   findAll() {
     return this.comentarioAvaliacaoService.findAll();
   }
 
-  // ROTA PARA A UI: /comentario-avaliacao/loja/5
+  @IsPublic()
   @Get('loja/:avaliacaoLojaId')
   findByAvaliacaoLoja(@Param('avaliacaoLojaId') avaliacaoLojaId: string) {
     return this.comentarioAvaliacaoService.findByAvaliacaoLoja(+avaliacaoLojaId);
@@ -35,6 +33,7 @@ export class ComentarioAvaliacaoController {
     return this.comentarioAvaliacaoService.findByAvaliacaoProduto(+avaliacaoProdutoId);
   }
 
+  @IsPublic()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.comentarioAvaliacaoService.findOne(+id);
