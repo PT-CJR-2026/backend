@@ -109,6 +109,57 @@ export class ProdutoService {
     });
   }
 
+  async findByTermo(termo: string) {
+    const termoLimpo = termo.trim();
+
+    if (!termoLimpo) {
+      return [];
+    }
+
+    return this.prisma.produto.findMany({
+      where: {
+        OR: [
+          { nome: { contains: termoLimpo, mode: 'insensitive' } },
+          { descricao: { contains: termoLimpo, mode: 'insensitive' } },
+          { loja: { nome: { contains: termoLimpo, mode: 'insensitive' } } },
+          { categoria: { nome: { contains: termoLimpo, mode: 'insensitive' } } },
+        ],
+      },
+      include: {
+        categoria: true,
+        imagem_produto: { orderBy: { ordem: 'asc' } },
+        loja: { select: { nome: true, logo_url: true } },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+  }
+
+  async findSugestoes(termo: string, limit = 5) {
+    const termoLimpo = termo.trim();
+
+    if (!termoLimpo) {
+      return [];
+    }
+
+    return this.prisma.produto.findMany({
+      take: limit,
+      where: {
+        nome: { contains: termoLimpo, mode: 'insensitive' },
+      },
+      select: {
+        id: true,
+        nome: true,
+        preco: true,
+        imagem_produto: {
+          orderBy: { ordem: 'asc' },
+          take: 1,
+          select: { url_imagem: true },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+  }
+
   async findByCategoria(categoriaId: number) {
     const subcategorias = await this.prisma.categoria.findMany({
       where: { categoria_pai_id: categoriaId },
