@@ -53,7 +53,8 @@ export class LojaService {
       where: { id },
       include: {
         usuario: {
-          select: { id: true, username: true, foto_perfil_url: true },
+          // CORREÇÃO 1: Adicionado 'nome: true' para puxar o nome real
+          select: { id: true, nome: true, username: true, foto_perfil_url: true },
         },
 
         produtos: {
@@ -61,6 +62,10 @@ export class LojaService {
           orderBy: { created_at: 'desc' },
           include: {
             imagem_produto: { orderBy: { ordem: 'asc' }, take: 1 },
+            //  CORREÇÃO 2: Include da categoria idêntico ao do seu findAll()
+            categoria: {
+              include: { categoria_pai: true },
+            },
           },
         },
 
@@ -85,7 +90,11 @@ export class LojaService {
       throw new NotFoundException(`Loja com id ${id} não encontrada`);
     }
 
-    return loja;
+    // CORREÇÃO 3: Extrai a categoria e anexa à resposta, igual no findAll()
+    const cat = loja.produtos[0]?.categoria;
+    const nomeExibido = cat?.categoria_pai?.nome ?? cat?.nome ?? null;
+
+    return { ...loja, categoria: nomeExibido };
   }
 
   // ─── UPDATE ────────────────────────────────────────────────────────────────
