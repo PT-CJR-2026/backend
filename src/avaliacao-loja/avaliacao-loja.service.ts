@@ -14,12 +14,31 @@ export class AvaliacaoLojaService {
   }
 
   findAll() {
-    return this.prisma.avaliacao_Loja.findMany();
+    return this.prisma.avaliacao_Loja.findMany({
+      include: {
+        usuario: {
+          select: { id: true, username: true, foto_perfil_url: true },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
   }
 
   findOne(id: number) {
     return this.prisma.avaliacao_Loja.findUnique({
       where: { id },
+      include: {
+        usuario: {
+          select: { id: true, username: true, foto_perfil_url: true },
+        },
+        comentario_avaliacao: {
+          include: {
+            usuario: {
+              select: { id: true, username: true, foto_perfil_url: true },
+            },
+          },
+        },
+      },
     });
   }
 
